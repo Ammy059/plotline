@@ -3,173 +3,535 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Plotline</title>
+
+<title>Plotline — Living Diary Books</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
 body{
-background:#E7D7C1;
-font-family:'Merriweather',serif;
-color:#2E1F1A;
+  background:#E7D7C1;
+  font-family:'Merriweather',serif;
+  color:#2E1F1A;
 }
+
+/* HEADER */
+
 .header{
-height:80px;
-background:#FAF1E6;
-border-bottom:1px solid #D8C4A8;
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:0 50px;
+  height:80px;
+  background:#FAF1E6;
+  border-bottom:1px solid #D8C4A8;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 50px;
 }
+
 .logo{
-font-family:'Cormorant Garamond',serif;
-font-size:46px;
-color:#4A2C2A;
+  font-family:'Cormorant Garamond',serif;
+  font-size:46px;
+  color:#4A2C2A;
 }
+
+/* HERO */
+
 .hero{
-text-align:center;
-padding:100px 20px;
+  text-align:center;
+  padding:80px 20px 50px;
 }
+
 .hero h1{
-font-family:'Cormorant Garamond',serif;
-font-size:80px;
-margin-bottom:20px;
+  font-family:'Cormorant Garamond',serif;
+  font-size:72px;
+  margin-bottom:20px;
 }
+
 .hero p{
-max-width:700px;
-margin:auto;
-line-height:2;
-color:#5A463B;
+  max-width:700px;
+  margin:auto;
+  line-height:2;
+  color:#5A463B;
 }
-.bookshelf{
-display:flex;
-gap:30px;
-justify-content:center;
-flex-wrap:wrap;
-padding:40px;
-}
-.book{
-width:220px;
-height:320px;
-padding:20px;
-border-radius:10px;
-color:white;
-position:relative;
-box-shadow:0 10px 25px rgba(0,0,0,0.2);
-}
-.book1{background:#6E3B3B;}
-.book2{background:#2F4F4F;}
-.book-title{
-font-family:'Cormorant Garamond',serif;
-font-size:34px;
-margin-top:40px;
-}
-.book-author{
-position:absolute;
-bottom:25px;
-left:20px;
-}
+
+/* CREATE BOOK */
+
 .create-book{
-max-width:800px;
-margin:60px auto;
-background:#FFF9F1;
-padding:40px;
-border-radius:24px;
+  max-width:800px;
+  margin:50px auto;
+  background:#FFF9F1;
+  padding:40px;
+  border-radius:24px;
+  border:1px solid #D8C4A8;
 }
+
+.section-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:48px;
+  text-align:center;
+  margin-bottom:30px;
+}
+
 .input{
-width:100%;
-padding:16px;
-margin-bottom:20px;
-border-radius:14px;
-border:1px solid #D6C2A8;
+  width:100%;
+  padding:16px;
+  margin-bottom:20px;
+  border-radius:14px;
+  border:1px solid #D6C2A8;
+  background:#FFFCF7;
+  font-family:'Merriweather',serif;
 }
+
+.textarea{
+  min-height:200px;
+  resize:none;
+  line-height:2;
+}
+
 .publish-btn{
-width:100%;
-background:#6E3B3B;
-color:white;
-border:none;
-padding:16px;
-border-radius:16px;
-cursor:pointer;
+  width:100%;
+  background:#6E3B3B;
+  color:white;
+  border:none;
+  padding:16px;
+  border-radius:16px;
+  cursor:pointer;
+  font-size:16px;
 }
+
+/* BOOK SHELF */
+
+.bookshelf{
+  display:flex;
+  flex-wrap:wrap;
+  gap:30px;
+  justify-content:center;
+  padding:50px;
+}
+
+.book{
+  width:220px;
+  height:320px;
+  border-radius:10px;
+  padding:20px;
+  color:white;
+  cursor:pointer;
+  position:relative;
+  transition:.3s;
+  box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+
+.book:hover{
+  transform:translateY(-6px);
+}
+
+.book::before{
+  content:"";
+  position:absolute;
+  left:10px;
+  top:0;
+  width:8px;
+  height:100%;
+  background:rgba(255,255,255,0.15);
+}
+
+.book-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:34px;
+  margin-top:40px;
+  line-height:1.1;
+}
+
+.book-author{
+  position:absolute;
+  bottom:30px;
+  left:20px;
+}
+
+.book1{
+  background:#6E3B3B;
+}
+
+.book2{
+  background:#2F4F4F;
+}
+
+.book3{
+  background:#7B5E3B;
+}
+
+.book4{
+  background:#4A2C2A;
+}
+
+/* OPEN BOOK */
+
+.reading-page{
+  max-width:1000px;
+  margin:80px auto;
+  background:#FFFDF8;
+  border-radius:24px;
+  padding:70px;
+  box-shadow:0 15px 45px rgba(0,0,0,0.12);
+  display:none;
+  position:relative;
+}
+
+.reading-page::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:0;
+  transform:translateX(-50%);
+  width:6px;
+  height:100%;
+  background:#E8D9C5;
+}
+
+.chapter-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:62px;
+  margin-bottom:20px;
+}
+
+.chapter-meta{
+  color:#7B685D;
+  margin-bottom:40px;
+}
+
+.chapter-content{
+  line-height:2.5;
+  font-size:20px;
+  color:#3B2B24;
+}
+
+.chapter-content::first-letter{
+  font-size:80px;
+  float:left;
+  line-height:1;
+  padding-right:12px;
+  font-family:'Cormorant Garamond',serif;
+  color:#6B4423;
+}
+
+/* ACTIONS */
+
+.actions{
+  display:flex;
+  gap:14px;
+  margin-top:40px;
+  flex-wrap:wrap;
+}
+
+.action-btn{
+  background:#F1E0CC;
+  border:none;
+  padding:12px 18px;
+  border-radius:14px;
+  cursor:pointer;
+}
+
+.delete-btn{
+  background:#F3C8C3;
+  color:#7A1F1F;
+}
+
+/* FOOTER */
+
 .footer{
-text-align:center;
-padding:50px;
-color:#7B685D;
+  text-align:center;
+  padding:60px 20px;
+  color:#7B685D;
 }
+
+@media(max-width:768px){
+
+.hero h1{
+  font-size:52px;
+}
+
+.reading-page{
+  padding:35px;
+}
+
+.chapter-title{
+  font-size:42px;
+}
+
+.header{
+  padding:20px;
+}
+
+}
+
 </style>
 </head>
 
 <body>
 
+<!-- HEADER -->
+
 <div class="header">
-<div class="logo">Plotline</div>
+
+  <div class="logo">
+    Plotline
+  </div>
+
 </div>
+
+<!-- HERO -->
 
 <div class="hero">
-<h1>Public Diary Books</h1>
-<p>Create living books and share your memories publicly.</p>
-</div>
 
-<div class="bookshelf" id="bookshelf">
+  <h1>
+    Living Diary Books
+  </h1>
 
-<div class="book book1">
-<div class="book-title">The Quiet Between Rainfall</div>
-<div class="book-author">Amal K</div>
-</div>
-
-<div class="book book2">
-<div class="book-title">Rainy Evening Letters</div>
-<div class="book-author">Amelia Carter</div>
-</div>
+  <p>
+    Create public diary books that readers can open,
+    experience, and follow chapter by chapter.
+  </p>
 
 </div>
+
+<!-- CREATE BOOK -->
 
 <div class="create-book">
 
-<input type="text" id="bookTitle" class="input" placeholder="Book Title">
+  <div class="section-title">
+    Create Your Diary Book
+  </div>
 
-<input type="text" id="author" class="input" placeholder="Author Name">
+  <input
+    type="text"
+    id="bookTitle"
+    class="input"
+    placeholder="Book Title"
+  >
 
-<button class="publish-btn" onclick="createBook()">
-Publish Book
-</button>
+  <input
+    type="text"
+    id="author"
+    class="input"
+    placeholder="Author Name"
+  >
+
+  <textarea
+    id="chapter"
+    class="input textarea"
+    placeholder="Write your first chapter..."
+  ></textarea>
+
+  <button
+    class="publish-btn"
+    onclick="createBook()"
+  >
+    Publish Book
+  </button>
 
 </div>
 
+<!-- BOOKSHELF -->
+
+<div class="bookshelf" id="bookshelf">
+
+</div>
+
+<!-- OPEN BOOK VIEW -->
+
+<div class="reading-page" id="readingPage">
+
+  <div class="chapter-title" id="openTitle">
+  </div>
+
+  <div class="chapter-meta" id="openMeta">
+  </div>
+
+  <div class="chapter-content" id="openContent">
+  </div>
+
+  <div class="actions">
+
+    <button class="action-btn">
+      Like
+    </button>
+
+    <button class="action-btn">
+      Share
+    </button>
+
+    <button class="action-btn">
+      Save
+    </button>
+
+    <button
+      class="action-btn delete-btn"
+      onclick="deleteBook()"
+    >
+      Delete
+    </button>
+
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+
 <div class="footer">
-Plotline • Living Books & Public Diaries
+  Plotline • Living Public Diaries
 </div>
 
 <script>
+
+let books = [];
+
+let currentBookIndex = null;
+
+/* CREATE BOOK */
+
 function createBook(){
 
-const title=document.getElementById("bookTitle").value;
-const author=document.getElementById("author").value;
+  const title =
+  document.getElementById("bookTitle").value;
 
-if(title===""||author===""){
-alert("Please fill all fields");
-return;
+  const author =
+  document.getElementById("author").value;
+
+  const chapter =
+  document.getElementById("chapter").value;
+
+  if(title === "" || author === "" || chapter === ""){
+
+    alert("Please complete all fields.");
+
+    return;
+
+  }
+
+  const colors = [
+    "book1",
+    "book2",
+    "book3",
+    "book4"
+  ];
+
+  const randomColor =
+  colors[Math.floor(Math.random()*colors.length)];
+
+  const newBook = {
+    title,
+    author,
+    chapter,
+    color:randomColor
+  };
+
+  books.push(newBook);
+
+  renderBooks();
+
+  document.getElementById("bookTitle").value = "";
+  document.getElementById("author").value = "";
+  document.getElementById("chapter").value = "";
+
 }
 
-const colors=["book1","book2"];
-const randomColor=colors[Math.floor(Math.random()*colors.length)];
+/* RENDER BOOKS */
 
-const html=`
-<div class="book ${randomColor}">
-<div class="book-title">${title}</div>
-<div class="book-author">${author}</div>
-</div>
-`;
+function renderBooks(){
 
-document.getElementById("bookshelf")
-.insertAdjacentHTML("beforeend",html);
+  const shelf =
+  document.getElementById("bookshelf");
 
-document.getElementById("bookTitle").value="";
-document.getElementById("author").value="";
+  shelf.innerHTML = "";
+
+  books.forEach((book,index)=>{
+
+    shelf.innerHTML += `
+
+    <div
+      class="book ${book.color}"
+      onclick="openBook(${index})"
+    >
+
+      <div class="book-title">
+        ${book.title}
+      </div>
+
+      <div class="book-author">
+        ${book.author}
+      </div>
+
+    </div>
+
+    `;
+
+  });
+
 }
+
+/* OPEN BOOK */
+
+function openBook(index){
+
+  currentBookIndex = index;
+
+  const book = books[index];
+
+  document.getElementById(
+    "readingPage"
+  ).style.display = "block";
+
+  document.getElementById(
+    "openTitle"
+  ).innerText = book.title;
+
+  document.getElementById(
+    "openMeta"
+  ).innerText =
+  "Chapter 1 • " + book.author;
+
+  document.getElementById(
+    "openContent"
+  ).innerText = book.chapter;
+
+  window.scrollTo({
+    top:document.getElementById(
+      "readingPage"
+    ).offsetTop,
+    behavior:"smooth"
+  });
+
+}
+
+/* DELETE BOOK */
+
+function deleteBook(){
+
+  if(currentBookIndex === null)
+  return;
+
+  if(confirm(
+    "Delete this diary book?"
+  )){
+
+    books.splice(currentBookIndex,1);
+
+    renderBooks();
+
+    document.getElementById(
+      "readingPage"
+    ).style.display = "none";
+
+  }
+
+}
+
 </script>
 
 </body>
