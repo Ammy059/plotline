@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plotline</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+background:#E7D7C1;
+font-family:'Merriweather',serif;
+color:#2E1F1A;
+}
+.header{
+height:80px;
+background:#FAF1E6;
+border-bottom:1px solid #D8C4A8;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:0 50px;
+}
+.logo{
+font-family:'Cormorant Garamond',serif;
+font-size:46px;
+color:#4A2C2A;
+}
+.hero{
+text-align:center;
+padding:100px 20px;
+}
+.hero h1{
+font-family:'Cormorant Garamond',serif;
+font-size:80px;
+margin-bottom:20px;
+}
+.hero p{
+max-width:700px;
+margin:auto;
+line-height:2;
+color:#5A463B;
+}
+.bookshelf{
+display:flex;
+gap:30px;
+justify-content:center;
+flex-wrap:wrap;
+padding:40px;
+}
+.book{
+width:220px;
+height:320px;
+padding:20px;
+border-radius:10px;
+color:white;
+position:relative;
+box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+.book1{background:#6E3B3B;}
+.book2{background:#2F4F4F;}
+.book-title{
+font-family:'Cormorant Garamond',serif;
+font-size:34px;
+margin-top:40px;
+}
+.book-author{
+position:absolute;
+bottom:25px;
+left:20px;
+}
+.create-book{
+max-width:800px;
+margin:60px auto;
+background:#FFF9F1;
+padding:40px;
+border-radius:24px;
+}
+.input{
+width:100%;
+padding:16px;
+margin-bottom:20px;
+border-radius:14px;
+border:1px solid #D6C2A8;
+}
+.publish-btn{
+width:100%;
+background:#6E3B3B;
+color:white;
+border:none;
+padding:16px;
+border-radius:16px;
+cursor:pointer;
+}
+.footer{
+text-align:center;
+padding:50px;
+color:#7B685D;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+<div class="logo">Plotline</div>
+</div>
+
+<div class="hero">
+<h1>Public Diary Books</h1>
+<p>Create living books and share your memories publicly.</p>
+</div>
+
+<div class="bookshelf" id="bookshelf">
+
+<div class="book book1">
+<div class="book-title">The Quiet Between Rainfall</div>
+<div class="book-author">Amal K</div>
+</div>
+
+<div class="book book2">
+<div class="book-title">Rainy Evening Letters</div>
+<div class="book-author">Amelia Carter</div>
+</div>
+
+</div>
+
+<div class="create-book">
+
+<input type="text" id="bookTitle" class="input" placeholder="Book Title">
+
+<input type="text" id="author" class="input" placeholder="Author Name">
+
+<button class="publish-btn" onclick="createBook()">
+Publish Book
+</button>
+
+</div>
+
+<div class="footer">
+Plotline • Living Books & Public Diaries
+</div>
+
+<script>
+function createBook(){
+
+const title=document.getElementById("bookTitle").value;
+const author=document.getElementById("author").value;
+
+if(title===""||author===""){
+alert("Please fill all fields");
+return;
+}
+
+const colors=["book1","book2"];
+const randomColor=colors[Math.floor(Math.random()*colors.length)];
+
+const html=`
+<div class="book ${randomColor}">
+<div class="book-title">${title}</div>
+<div class="book-author">${author}</div>
+</div>
+`;
+
+document.getElementById("bookshelf")
+.insertAdjacentHTML("beforeend",html);
+
+document.getElementById("bookTitle").value="";
+document.getElementById("author").value="";
+}
+</script>
+
+</body>
+</html>
