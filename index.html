@@ -1,22 +1,151 @@
 
-          <section class="note-desk" aria-labelledby="notes-title">
-            <div class="note-heading">
-              <div>
-                <p class="note-label">Writer notes</p>
-                <h3 id="notes-title">Keep fragments close</h3>
-              </div>
-              <span id="note-count">0 notes</span>
-            </div>
+let selectedCategory = "Journal";
+let currentBookId = null;
+let editingBookId = null;
+let draftNotes = [];
 
-            <div class="note-compose">
-              <label>
-                <span class="sr-only">New note</span>
-                <textarea id="note-input" placeholder="Jot an image, quote, scene beat, reminder..."></textarea>
-              </label>
-              <button class="button button-ghost" type="button" id="add-note">Add note</button>
-            </div>
+const categoryOptions = document.querySelector("#category-options");
+const chapterStack = document.querySelector("#chapter-stack");
+const bookTitle = document.querySelector("#book-title");
+const bookAuthor = document.querySelector("#book-author");
+const addChapterButton = document.querySelector("#add-chapter");
+const noteInput = document.querySelector("#note-input");
+const addNoteButton = document.querySelector("#add-note");
+const noteList = document.querySelector("#note-list");
+const noteCount = document.querySelector("#note-count");
+const filters = document.querySelector("#filters");
+const bookGrid = document.querySelector("#book-grid");
+const bookTotal = document.querySelector("#book-total");
+  const now = Date.now();
+  const category = categories.includes(book.category) ? book.category : "Journal";
+  const chapters = Array.isArray(book.chapters) && book.chapters.length ? book.chapters : [{ title: "Chapter 1", body: "" }];
+  const notes = Array.isArray(book.notes) ? book.notes : [];
 
-            <div class="note-list" id="note-list" aria-live="polite"></div>
-          </section>
+  return {
+    id: typeof book.id === "string" ? book.id : createId(),
+    chapters: chapters.map((chapter, chapterIndex) => ({
+      title: typeof chapter.title === "string" && chapter.title.trim() ? chapter.title.trim() : `Chapter ${chapterIndex + 1}`,
+      body: typeof chapter.body === "string" ? chapter.body : ""
+    }))
+    })),
+    notes: notes
+      .map((note) => ({
+        id: typeof note.id === "string" ? note.id : createId(),
+        text: typeof note.text === "string" ? note.text.trim() : "",
+        createdAt: Number.isFinite(note.createdAt) ? note.createdAt : now
+      }))
+      .filter((note) => note.text)
+  };
+}
 
-          <div class="writer-footer">
+  });
+}
+
+function getActiveChapterTextarea() {
+  const focused = document.activeElement;
+  if (focused && focused.tagName === "TEXTAREA" && focused.closest(".chapter-card")) {
+    return focused;
+  }
+
+  return chapterStack.querySelector(".chapter-card textarea");
+}
+
+function insertIntoTextarea(textarea, text) {
+  if (!textarea) return;
+
+  const start = textarea.selectionStart ?? textarea.value.length;
+  const end = textarea.selectionEnd ?? textarea.value.length;
+  const prefix = textarea.value.slice(0, start);
+  const suffix = textarea.value.slice(end);
+  const separator = prefix && !prefix.endsWith("\n") ? "\n" : "";
+  const trailing = suffix && !text.endsWith("\n") ? "\n" : "";
+  textarea.value = `${prefix}${separator}${text}${trailing}${suffix}`;
+  textarea.focus();
+  textarea.selectionStart = textarea.selectionEnd = start + separator.length + text.length;
+  updateWriterStats();
+}
+
+function renderNotes() {
+  noteCount.textContent = plural(draftNotes.length, "note");
+  noteList.replaceChildren();
+
+  if (!draftNotes.length) {
+    const empty = document.createElement("div");
+    empty.className = "note-empty";
+    empty.textContent = "No notes yet.";
+    noteList.append(empty);
+    return;
+  }
+
+  draftNotes.forEach((note) => {
+    const item = document.createElement("article");
+    item.className = "note-item";
+    item.innerHTML = `
+      <p>${escapeHtml(note.text)}</p>
+      <div class="note-actions">
+        <button class="note-action" type="button" data-note-action="insert" data-note-id="${note.id}">Insert</button>
+        <button class="note-action danger" type="button" data-note-action="delete" data-note-id="${note.id}">Delete</button>
+      </div>
+    `;
+    noteList.append(item);
+  });
+}
+
+function addDraftNote() {
+  const text = noteInput.value.trim();
+  if (!text) {
+    showToast("Write a note first.");
+    return;
+  }
+
+  draftNotes = [{ id: createId(), text, createdAt: Date.now() }, ...draftNotes];
+  noteInput.value = "";
+  renderNotes();
+  showToast("Note added.");
+}
+
+function deleteDraftNote(id) {
+  draftNotes = draftNotes.filter((note) => note.id !== id);
+  renderNotes();
+}
+
+function updateWriterStats() {
+  const chapters = getDraftChapters();
+  const words = chapters.reduce((total, chapter) => total + countWords(chapter.body), 0);
+        `
+      )
+      .join("")}
+    ${book.notes?.length ? `
+      <aside class="reader-notes">
+        <h3>Writer notes</h3>
+        ${book.notes.map((note) => `<p>${escapeHtml(note.text)}</p>`).join("")}
+      </aside>
+    ` : ""}
+  `;
+  readerPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+  bookAuthor.value = "";
+  selectedCategory = "Journal";
+  editingBookId = null;
+  draftNotes = [];
+  noteInput.value = "";
+  writeTitle.textContent = "Begin a new book";
+  chapterStack.replaceChildren(createChapter(0));
+  renderCategoryOptions();
+  renderNotes();
+  updateWriterStats();
+}
+
+  bookTitle.value = book.title;
+  bookAuthor.value = book.author;
+  selectedCategory = book.category;
+  draftNotes = (book.notes || []).map((note) => ({ ...note }));
+  noteInput.value = "";
+  writeTitle.textContent = "Edit this book";
+  chapterStack.replaceChildren(...book.chapters.map((chapter, index) => createChapter(index, chapter.title, chapter.body)));
+  renderCategoryOptions();
+  renderNotes();
+  updateWriterStats();
+  document.querySelector("#write").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+  updateWriterStats();
