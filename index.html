@@ -1,151 +1,302 @@
-
-let selectedCategory = "Journal";
-let currentBookId = null;
-let editingBookId = null;
-let draftNotes = [];
-
-const categoryOptions = document.querySelector("#category-options");
-const chapterStack = document.querySelector("#chapter-stack");
-const bookTitle = document.querySelector("#book-title");
-const bookAuthor = document.querySelector("#book-author");
-const addChapterButton = document.querySelector("#add-chapter");
-const noteInput = document.querySelector("#note-input");
-const addNoteButton = document.querySelector("#add-note");
-const noteList = document.querySelector("#note-list");
-const noteCount = document.querySelector("#note-count");
-const filters = document.querySelector("#filters");
-const bookGrid = document.querySelector("#book-grid");
-const bookTotal = document.querySelector("#book-total");
-  const now = Date.now();
-  const category = categories.includes(book.category) ? book.category : "Journal";
-  const chapters = Array.isArray(book.chapters) && book.chapters.length ? book.chapters : [{ title: "Chapter 1", body: "" }];
-  const notes = Array.isArray(book.notes) ? book.notes : [];
-
-  return {
-    id: typeof book.id === "string" ? book.id : createId(),
-    chapters: chapters.map((chapter, chapterIndex) => ({
-      title: typeof chapter.title === "string" && chapter.title.trim() ? chapter.title.trim() : `Chapter ${chapterIndex + 1}`,
-      body: typeof chapter.body === "string" ? chapter.body : ""
-    }))
-    })),
-    notes: notes
-      .map((note) => ({
-        id: typeof note.id === "string" ? note.id : createId(),
-        text: typeof note.text === "string" ? note.text.trim() : "",
-        createdAt: Number.isFinite(note.createdAt) ? note.createdAt : now
-      }))
-      .filter((note) => note.text)
-  };
-}
-
-  });
-}
-
-function getActiveChapterTextarea() {
-  const focused = document.activeElement;
-  if (focused && focused.tagName === "TEXTAREA" && focused.closest(".chapter-card")) {
-    return focused;
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Plotline — Diary & Books</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;700&family=Inter:wght@400;500;600&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6f1e7; --paper:#fbf7ee; --card:#fffaf0; --ink:#1d1a17; --muted:#7a6f63;
+    --border:#e6dbc7; --primary:#7a3b2e; --primary-ink:#fbf7ee; --accent:#c2956b;
   }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif}
+  a{color:inherit}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px 20px 80px}
+  header.top{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+  .brand{font-family:Fraunces,serif;font-size:28px;font-weight:700;letter-spacing:-.5px}
+  .brand small{display:block;font-family:Inter;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);font-weight:500}
+  .btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;font-family:inherit}
+  .btn:hover{border-color:var(--accent)}
+  .btn.primary{background:var(--primary);color:var(--primary-ink);border-color:var(--primary)}
+  .btn.ghost{background:transparent}
+  .btn.sm{padding:4px 10px;font-size:12px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px}
+  .card h3{font-family:Fraunces,serif;margin:6px 0 4px;font-size:20px}
+  .meta{color:var(--muted);font-size:12px}
+  .chip{display:inline-block;border:1px solid var(--border);border-radius:999px;padding:2px 8px;font-size:11px;color:var(--muted);background:var(--paper)}
+  .chip.active{background:var(--primary);color:var(--primary-ink);border-color:var(--primary)}
+  input,textarea,select{font-family:inherit;color:var(--ink);background:var(--paper);border:1px solid var(--border);border-radius:10px;padding:8px 12px;font-size:14px;width:100%}
+  textarea{min-height:140px;resize:vertical;font-family:Lora,serif;line-height:1.8;font-size:16px}
+  label{display:block;font-size:12px;color:var(--muted);margin:10px 0 4px;text-transform:uppercase;letter-spacing:.15em}
+  .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px}
+  .toolbar input[type=search]{max-width:280px}
+  .reader{background:var(--paper);border:1px solid var(--border);border-radius:14px;padding:24px}
+  .reader article{font-family:Lora,serif;font-size:18px;line-height:2;white-space:pre-wrap}
+  .progress{height:4px;background:var(--border);border-radius:999px;overflow:hidden;margin:8px 0 16px}
+  .progress > div{height:100%;background:var(--primary);width:0%}
+  .chapters{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 18px}
+  .chap-pill{border:1px solid var(--border);background:var(--card);padding:4px 10px;border-radius:999px;font-size:12px;cursor:pointer}
+  .chap-pill.active{background:var(--primary);color:var(--primary-ink);border-color:var(--primary)}
+  .hidden{display:none}
+  .like{cursor:pointer;background:none;border:0;font-size:18px;color:var(--muted)}
+  .like.on{color:var(--primary)}
+  .row-between{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .manage{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;margin-top:14px}
+  .manage li{display:flex;align-items:center;gap:8px;padding:6px;border:1px solid var(--border);border-radius:10px;background:var(--paper);margin-bottom:6px;list-style:none}
+  .manage ul{padding:0;margin:8px 0 0}
+  footer{margin-top:40px;color:var(--muted);font-size:12px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">Plotline<small>Diary &amp; Books</small></div>
+    <div style="flex:1"></div>
+    <button class="btn" id="newBookBtn">+ New book</button>
+  </header>
 
-  return chapterStack.querySelector(".chapter-card textarea");
-}
+  <section id="shelf">
+    <div class="toolbar">
+      <input type="search" id="q" placeholder="Search title or author…" />
+      <select id="sort" style="max-width:160px">
+        <option value="updated">Recently updated</option>
+        <option value="newest">Newest</option>
+        <option value="liked">Most liked</option>
+      </select>
+      <div id="catFilters" class="row"></div>
+    </div>
+    <div class="grid" id="bookGrid"></div>
+  </section>
 
-function insertIntoTextarea(textarea, text) {
-  if (!textarea) return;
+  <section id="composer" class="card hidden" style="margin-top:24px">
+    <h3 style="margin-top:0">New book</h3>
+    <label>Title</label><input id="cTitle" placeholder="Untitled" />
+    <label>Author</label><input id="cAuthor" placeholder="Anonymous" />
+    <label>Category</label>
+    <select id="cCat">
+      <option>Journal</option><option>Travel</option><option>Memoir</option>
+      <option>Fiction</option><option>Poetry</option><option>Notes</option>
+    </select>
+    <label>First chapter</label>
+    <textarea id="cBody" placeholder="Begin writing…"></textarea>
+    <div class="row" style="margin-top:12px">
+      <button class="btn primary" id="publishBtn">Publish</button>
+      <button class="btn ghost" id="cancelBtn">Cancel</button>
+    </div>
+  </section>
 
-  const start = textarea.selectionStart ?? textarea.value.length;
-  const end = textarea.selectionEnd ?? textarea.value.length;
-  const prefix = textarea.value.slice(0, start);
-  const suffix = textarea.value.slice(end);
-  const separator = prefix && !prefix.endsWith("\n") ? "\n" : "";
-  const trailing = suffix && !text.endsWith("\n") ? "\n" : "";
-  textarea.value = `${prefix}${separator}${text}${trailing}${suffix}`;
-  textarea.focus();
-  textarea.selectionStart = textarea.selectionEnd = start + separator.length + text.length;
-  updateWriterStats();
-}
-
-function renderNotes() {
-  noteCount.textContent = plural(draftNotes.length, "note");
-  noteList.replaceChildren();
-
-  if (!draftNotes.length) {
-    const empty = document.createElement("div");
-    empty.className = "note-empty";
-    empty.textContent = "No notes yet.";
-    noteList.append(empty);
-    return;
-  }
-
-  draftNotes.forEach((note) => {
-    const item = document.createElement("article");
-    item.className = "note-item";
-    item.innerHTML = `
-      <p>${escapeHtml(note.text)}</p>
-      <div class="note-actions">
-        <button class="note-action" type="button" data-note-action="insert" data-note-id="${note.id}">Insert</button>
-        <button class="note-action danger" type="button" data-note-action="delete" data-note-id="${note.id}">Delete</button>
+  <section id="reader" class="reader hidden" style="margin-top:24px">
+    <div class="row-between">
+      <div>
+        <div class="meta"><span id="rCat" class="chip"></span> · <span id="rUpdated"></span></div>
+        <h2 style="font-family:Fraunces,serif;margin:6px 0 0" id="rTitle"></h2>
+        <div class="meta" id="rAuthor"></div>
       </div>
-    `;
-    noteList.append(item);
+      <div class="row">
+        <button class="btn sm" id="addChapBtn">+ Chapter</button>
+        <button class="btn sm" id="manageBtn">Manage</button>
+        <button class="btn sm" id="editBtn">Edit</button>
+        <button class="btn sm ghost" id="closeBtn">Close</button>
+      </div>
+    </div>
+    <div class="chapters" id="rChapters"></div>
+    <div class="progress"><div id="rBar"></div></div>
+    <div class="meta" id="rProg" style="margin-bottom:12px"></div>
+    <article id="rBody"></article>
+    <textarea id="rEdit" class="hidden" style="margin-top:12px"></textarea>
+    <div id="rManage" class="manage hidden"></div>
+  </section>
+
+  <footer>Plotline · saved locally in your browser</footer>
+</div>
+
+<script>
+const KEY = "plotline-html:v1";
+const CATS = ["Journal","Travel","Memoir","Fiction","Poetry","Notes"];
+const SEED = [{
+  id:"seed-1", title:"Letters from the Coast", author:"Mira Voss", category:"Travel",
+  createdAt:Date.now()-864e5*30, updatedAt:Date.now()-864e5,
+  chapters:[
+    {title:"Chapter I — Arrival", body:"The harbor was quiet that morning.\n\nGulls drew slow circles overhead while the fog lifted off the water."},
+    {title:"Chapter II — The Lighthouse", body:"I climbed the steps before dawn.\n\nFrom the top the world looked small and forgivable."},
+  ]
+}];
+
+let state = load();
+
+function load(){
+  try{
+    const r = localStorage.getItem(KEY);
+    if(r){ const p = JSON.parse(r); if(p && p.books) return p; }
+  }catch{}
+  return { books:[...SEED], liked:{}, positions:{}, prefs:{sort:"updated",cat:"All"} };
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch{} }
+
+function rel(ts){
+  const d = Date.now()-ts; const s=Math.floor(d/1000);
+  if(s<60) return "just now";
+  if(s<3600) return Math.floor(s/60)+"m ago";
+  if(s<86400) return Math.floor(s/3600)+"h ago";
+  if(s<2592000) return Math.floor(s/86400)+"d ago";
+  return Math.floor(s/2592000)+"mo ago";
+}
+const $ = s => document.querySelector(s);
+
+let openId = null, chapterIdx = 0, editing = false, managing = false;
+
+function renderShelf(){
+  const q = ($("#q").value||"").toLowerCase();
+  const sort = state.prefs.sort, cat = state.prefs.cat;
+  $("#sort").value = sort;
+  // category filters
+  const cf = $("#catFilters"); cf.innerHTML = "";
+  ["All",...CATS].forEach(c=>{
+    const b = document.createElement("button");
+    b.className = "chip"+(cat===c?" active":"");
+    b.textContent = c;
+    b.onclick = ()=>{ state.prefs.cat = c; save(); renderShelf(); };
+    cf.appendChild(b);
   });
+  let list = state.books.filter(b=>{
+    if(cat!=="All" && b.category!==cat) return false;
+    if(!q) return true;
+    return b.title.toLowerCase().includes(q)||b.author.toLowerCase().includes(q);
+  });
+  if(sort==="newest") list.sort((a,b)=>b.createdAt-a.createdAt);
+  else if(sort==="updated") list.sort((a,b)=>b.updatedAt-a.updatedAt);
+  else list.sort((a,b)=>(state.liked[b.id]?1:0)-(state.liked[a.id]?1:0) || b.updatedAt-a.updatedAt);
+
+  const g = $("#bookGrid"); g.innerHTML = "";
+  list.forEach(b=>{
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="row-between">
+        <span class="chip">${b.category}</span>
+        <button class="like ${state.liked[b.id]?'on':''}" title="Like">♥</button>
+      </div>
+      <h3>${escape(b.title)}</h3>
+      <div class="meta">by ${escape(b.author)}</div>
+      <div class="meta" style="margin-top:6px">${b.chapters.length} ch · upd. ${rel(b.updatedAt)}</div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn sm primary">Read</button>
+        <button class="btn sm ghost del">Delete</button>
+      </div>`;
+    card.querySelector(".like").onclick = (e)=>{ e.stopPropagation(); state.liked[b.id]=!state.liked[b.id]; save(); renderShelf(); };
+    card.querySelector(".btn.primary").onclick = ()=> openBook(b.id);
+    card.querySelector(".del").onclick = ()=>{
+      if(confirm("Delete this book?")){ state.books = state.books.filter(x=>x.id!==b.id); delete state.liked[b.id]; delete state.positions[b.id]; save(); renderShelf(); }
+    };
+    g.appendChild(card);
+  });
+  if(list.length===0) g.innerHTML = `<div class="meta">No books match.</div>`;
 }
 
-function addDraftNote() {
-  const text = noteInput.value.trim();
-  if (!text) {
-    showToast("Write a note first.");
-    return;
+function openBook(id){
+  openId = id;
+  const pos = state.positions[id];
+  chapterIdx = pos ? Math.min(pos.chapterIdx, getBook().chapters.length-1) : 0;
+  editing=false; managing=false;
+  $("#reader").classList.remove("hidden");
+  $("#composer").classList.add("hidden");
+  renderReader();
+  $("#reader").scrollIntoView({behavior:"smooth"});
+}
+function getBook(){ return state.books.find(b=>b.id===openId); }
+
+function renderReader(){
+  const b = getBook(); if(!b) return;
+  $("#rTitle").textContent = b.title;
+  $("#rAuthor").textContent = "by "+b.author;
+  $("#rCat").textContent = b.category;
+  $("#rUpdated").textContent = "Updated "+rel(b.updatedAt);
+  const ch = $("#rChapters"); ch.innerHTML="";
+  b.chapters.forEach((c,i)=>{
+    const p = document.createElement("button");
+    p.className = "chap-pill"+(i===chapterIdx?" active":"");
+    p.textContent = (i+1)+". "+c.title;
+    p.onclick = ()=>{ chapterIdx=i; renderReader(); };
+    ch.appendChild(p);
+  });
+  const cur = b.chapters[chapterIdx];
+  $("#rBody").textContent = cur ? cur.body : "";
+  $("#rEdit").value = cur ? cur.body : "";
+  $("#rEdit").classList.toggle("hidden", !editing);
+  $("#rBody").classList.toggle("hidden", editing);
+  $("#editBtn").textContent = editing ? "Done" : "Edit";
+  const paras = (cur?.body||"").split(/\n\s*\n/).filter(Boolean);
+  $("#rProg").textContent = `Chapter ${chapterIdx+1} of ${b.chapters.length} · ${paras.length} paragraph${paras.length===1?'':'s'}`;
+  $("#rBar").style.width = b.chapters.length ? ((chapterIdx+1)/b.chapters.length*100)+"%" : "0%";
+  state.positions[openId] = { chapterIdx, paraIdx:0 };
+  save();
+  // manage panel
+  const mg = $("#rManage");
+  mg.classList.toggle("hidden", !managing);
+  if(managing){
+    mg.innerHTML = `<div class="row-between">
+        <strong style="font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)">Manage chapters</strong>
+        <span class="meta">Updated ${rel(b.updatedAt)}</span>
+      </div><ul></ul>`;
+    const ul = mg.querySelector("ul");
+    b.chapters.forEach((c,i)=>{
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <span style="width:24px;text-align:center;color:var(--muted)">${i+1}</span>
+        <input value="${escapeAttr(c.title)}" style="flex:1" />
+        <button class="btn sm" data-act="up">↑</button>
+        <button class="btn sm" data-act="down">↓</button>
+        <button class="btn sm ghost" data-act="del">✕</button>`;
+      const inp = li.querySelector("input");
+      inp.onchange = ()=>{ renameCh(i, inp.value); };
+      li.querySelector('[data-act=up]').onclick = ()=> moveCh(i,-1);
+      li.querySelector('[data-act=down]').onclick = ()=> moveCh(i,1);
+      li.querySelector('[data-act=del]').onclick = ()=>{ if(confirm("Delete chapter?")) delCh(i); };
+      ul.appendChild(li);
+    });
   }
-
-  draftNotes = [{ id: createId(), text, createdAt: Date.now() }, ...draftNotes];
-  noteInput.value = "";
-  renderNotes();
-  showToast("Note added.");
 }
 
-function deleteDraftNote(id) {
-  draftNotes = draftNotes.filter((note) => note.id !== id);
-  renderNotes();
-}
+function bump(){ const b=getBook(); if(b){ b.updatedAt=Date.now(); } }
+function renameCh(i,t){ const b=getBook(); const v=t.trim(); if(!v) return; b.chapters[i].title=v; bump(); save(); renderReader(); renderShelf(); }
+function delCh(i){ const b=getBook(); if(b.chapters.length<=1) return alert("Keep at least one chapter."); b.chapters.splice(i,1); if(chapterIdx>=b.chapters.length) chapterIdx=b.chapters.length-1; bump(); save(); renderReader(); renderShelf(); }
+function moveCh(i,dir){ const b=getBook(); const j=i+dir; if(j<0||j>=b.chapters.length) return; const [c]=b.chapters.splice(i,1); b.chapters.splice(j,0,c); if(chapterIdx===i) chapterIdx=j; else if(chapterIdx===j) chapterIdx=i; bump(); save(); renderReader(); renderShelf(); }
+function addCh(){ const b=getBook(); b.chapters.push({title:"Chapter "+(b.chapters.length+1), body:""}); chapterIdx=b.chapters.length-1; editing=true; bump(); save(); renderReader(); renderShelf(); }
 
-function updateWriterStats() {
-  const chapters = getDraftChapters();
-  const words = chapters.reduce((total, chapter) => total + countWords(chapter.body), 0);
-        `
-      )
-      .join("")}
-    ${book.notes?.length ? `
-      <aside class="reader-notes">
-        <h3>Writer notes</h3>
-        ${book.notes.map((note) => `<p>${escapeHtml(note.text)}</p>`).join("")}
-      </aside>
-    ` : ""}
-  `;
-  readerPanel.scrollIntoView({ behavior: "smooth", block: "start" });
-}
-  bookAuthor.value = "";
-  selectedCategory = "Journal";
-  editingBookId = null;
-  draftNotes = [];
-  noteInput.value = "";
-  writeTitle.textContent = "Begin a new book";
-  chapterStack.replaceChildren(createChapter(0));
-  renderCategoryOptions();
-  renderNotes();
-  updateWriterStats();
-}
+function escape(s){ return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])); }
+function escapeAttr(s){ return escape(s).replace(/"/g,"&quot;"); }
 
-  bookTitle.value = book.title;
-  bookAuthor.value = book.author;
-  selectedCategory = book.category;
-  draftNotes = (book.notes || []).map((note) => ({ ...note }));
-  noteInput.value = "";
-  writeTitle.textContent = "Edit this book";
-  chapterStack.replaceChildren(...book.chapters.map((chapter, index) => createChapter(index, chapter.title, chapter.body)));
-  renderCategoryOptions();
-  renderNotes();
-  updateWriterStats();
-  document.querySelector("#write").scrollIntoView({ behavior: "smooth", block: "start" });
-}
-  updateWriterStats();
+// events
+$("#q").addEventListener("input", renderShelf);
+$("#sort").addEventListener("change", ()=>{ state.prefs.sort=$("#sort").value; save(); renderShelf(); });
+$("#newBookBtn").onclick = ()=>{ $("#composer").classList.toggle("hidden"); };
+$("#cancelBtn").onclick = ()=> $("#composer").classList.add("hidden");
+$("#publishBtn").onclick = ()=>{
+  const t = $("#cTitle").value.trim()||"Untitled";
+  const a = $("#cAuthor").value.trim()||"Anonymous";
+  const cat = $("#cCat").value;
+  const body = $("#cBody").value;
+  const now = Date.now();
+  state.books.unshift({ id:"b"+now, title:t, author:a, category:cat, createdAt:now, updatedAt:now, chapters:[{title:"Chapter I", body}] });
+  ["cTitle","cAuthor","cBody"].forEach(i=>$("#"+i).value="");
+  save(); renderShelf(); $("#composer").classList.add("hidden");
+};
+$("#closeBtn").onclick = ()=>{ openId=null; $("#reader").classList.add("hidden"); };
+$("#editBtn").onclick = ()=>{
+  if(editing){ const b=getBook(); b.chapters[chapterIdx].body=$("#rEdit").value; bump(); save(); }
+  editing=!editing; renderReader(); renderShelf();
+};
+$("#manageBtn").onclick = ()=>{ managing=!managing; renderReader(); };
+$("#addChapBtn").onclick = addCh;
+$("#rEdit").addEventListener("input", ()=>{ const b=getBook(); b.chapters[chapterIdx].body=$("#rEdit").value; bump(); save(); /* live */ });
+
+renderShelf();
+</script>
+</body>
+</html>
