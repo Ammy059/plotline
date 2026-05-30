@@ -1,0 +1,19 @@
+{
+  "name": "Plotline",
+  "short_name": "Plotline",
+  "description": "Write, archive, collaborate on, and read living diary books.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f7f2e6",
+  "theme_color": "#7f2d38",
+  "icons": [
+    {
+      "src": "/icons/plotline.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
