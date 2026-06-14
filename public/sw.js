@@ -1,5 +1,11 @@
 const CACHE_NAME = "plotline-mobile-v1";
-const APP_SHELL = ["/", "/manifest.webmanifest", "/icons/plotline.svg"];
+const scopeUrl = new URL(self.registration.scope);
+const appUrl = scopeUrl.href;
+const APP_SHELL = [
+  appUrl,
+  new URL("manifest.webmanifest", scopeUrl).href,
+  new URL("icons/plotline.svg", scopeUrl).href,
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -25,7 +31,7 @@ self.addEventListener("fetch", (event) => {
         const copy = response.clone();
         caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
         return response;
-      }).catch(() => caches.match("/")),
+      }).catch(() => caches.match(appUrl)),
     ),
   );
 });

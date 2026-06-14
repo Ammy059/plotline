@@ -2,8 +2,8 @@ import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
-export default defineConfig({
-  base: "/plotline/",
+export default defineConfig(({ command }) => ({
+  base: command === "build" ? "/plotline/" : "/",
   plugins: [
     TanStackRouterVite({
       routesDirectory: "./src/routes",
@@ -11,4 +11,4 @@ export default defineConfig({
     }),
     react(),
   ],
-});
+}));
